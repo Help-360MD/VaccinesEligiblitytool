@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HELP360 MD | Vaccine Eligibility Tool</title>
+    <style>
+        :root {
+            --surface: rgba(255, 255, 255, 0.94);
+            --surface-strong: #ffffff;
+            --ink: #1d3550;
+            --muted: #617387;
+            --line: #dbe2eb;
+            --brand: #caa468;
+            --brand-deep: #223f5d;
+            --ok-bg: #dcfce7;
+            --ok-ink: #166534;
+            --no-bg: #fee2e2;
+            --no-ink: #991b1b;
+            --shadow: 0 20px 50px rgba(23, 41, 63, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(202, 164, 104, 0.22), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(34, 63, 93, 0.16), transparent 24%),
+                linear-gradient(135deg, #eef2f7 0%, #f9fafc 48%, #e8eef5 100%);
+            padding: 24px 18px 40px;
+        }
+
+        .page {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.08fr 0.92fr;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .brand-card,
+        .tool-card,
+        .result-card,
+        .guide-card,
+        .drawer-card {
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .brand-card {
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(29, 53, 80, 0.98), rgba(34, 63, 93, 0.94));
+            color: #f9fcff;
+        }
+
+        .brand-card::after {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            right: -90px;
+            top: -90px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .logo-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border-radius: 18px;
+            border: 1px solid rgba(202, 164, 104, 0.22);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .brand-logo {
+            display: block;
+            width: min(100%, 320px);
+            height: auto;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(202, 164, 104, 0.36);
+            background: rgba(202, 164, 104, 0.14);
+            color: #f5e7cd;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .brand-card h1 {
+            margin: 18px 0 12px;
+            font-size: clamp(2rem, 4vw, 3.1rem);
+            line-height: 1.02;
+        }
+
+        .brand-card p {
+            margin: 0;
+            max-width: 46ch;
+            line-height: 1.7;
+            color: rgba(249, 252, 255, 0.88);
+        }
+
+        .brand-points {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .brand-point {
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .brand-point strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .tool-card,
+        .result-card,
+        .guide-card,
+        .drawer-card {
+            padding: 28px;
+            margin-top: 24px;
+        }
+
+        .tool-card {
+            margin-top: 0;
+        }
+
+        .section-kicker {
+            display: inline-block;
+            margin-bottom: 8px;
+            color: var(--brand);
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            margin: 0 0 8px;
+            font-size: 1.55rem;
+        }
+
+        .subtext,
+        .guide-card > p,
+        .drawer-header p,
+        .summary-meta,
+        .footer-note {
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .subtext {
+            margin: 0 0 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: 700;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            font-size: 1rem;
+            color: var(--ink);
+            background: var(--surface-strong);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        input[type="date"]:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 4px rgba(202, 164, 104, 0.16);
+            transform: translateY(-1px);
+        }
+
+        .toolbar,
+        .link-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 14px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fffaf1;
+            background: linear-gradient(135deg, #caa468, #a98345);
+            box-shadow: 0 14px 28px rgba(169, 131, 69, 0.28);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.03);
+            box-shadow: 0 18px 30px rgba(169, 131, 69, 0.32);
+        }
+
+        .secondary-button {
+            min-width: 210px;
+            color: var(--brand-deep);
+            background: linear-gradient(135deg, #fffaf1, #f0ddb5);
+            border: 2px solid #caa468;
+            box-shadow: 0 14px 28px rgba(169, 131, 69, 0.22);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+
+        .secondary-button.active {
+            color: #fffaf1;
+            background: linear-gradient(135deg, #caa468, #a98345);
+            border-color: #a98345;
+        }
+
+        .mini-note {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: #f8f4ec;
+            color: var(--muted);
+            line-height: 1.65;
+            border: 1px solid #eadfcd;
+        }
+
+        .result-card {
+            display: none;
+        }
+
+        .result-card.active,
+        .drawer-card.active {
+            display: block;
+        }
+
+        .summary-head {
+            margin-bottom: 20px;
+        }
+
+        .summary-meta {
+            margin: 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .summary-tile {
+            padding: 18px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #ffffff, #f8f4ec);
+            border: 1px solid #eadfcd;
+        }
+
+        .summary-tile span {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .summary-tile strong {
+            font-size: 1.4rem;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 18px;
+            border: 1px solid #dbe2eb;
+            background: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #ebf0f4;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eef2f6;
+            color: var(--brand-deep);
+            font-size: 0.92rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        tbody tr:hover {
+            background: #faf7f1;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 76px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.88rem;
+        }
+
+        .status-yes {
+            background: var(--ok-bg);
+            color: var(--ok-ink);
+        }
+
+        .status-no {
+            background: var(--no-bg);
+            color: var(--no-ink);
+        }
+
+        .drawer-card {
+            display: none;
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .drawer-header p {
+            margin: 6px 0 0;
+        }
+
+        .sop-block + .sop-block {
+            margin-top: 22px;
+            padding-top: 22px;
+            border-top: 1px solid #e6ebf2;
+        }
+
+        .sop-block h3 {
+            margin: 0 0 10px;
+            color: var(--brand-deep);
+            font-size: 1.08rem;
+        }
+
+        .sop-block p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .sop-list {
+            margin: 12px 0 0;
+            padding-left: 20px;
+            color: var(--ink);
+            line-height: 1.7;
+        }
+
+        .sop-list li + li {
+            margin-top: 6px;
+        }
+
+        .legend-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .legend-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            background: #f8f4ec;
+            border: 1px solid #eadfcd;
+            color: var(--ink);
+        }
+
+        .guide-image-frame {
+            overflow: hidden;
+            border-radius: 22px;
+            border: 1px solid #d8dee8;
+            background: #ffffff;
+            box-shadow: 0 18px 36px rgba(23, 41, 63, 0.08);
+        }
+
+        .guide-image {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        @media (max-width: 960px) {
+            .hero,
+            .brand-points,
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 18px 14px 28px;
+            }
+
+            .brand-card,
+            .tool-card,
+            .result-card,
+            .guide-card,
+            .drawer-card {
+                border-radius: 20px;
+                padding: 22px;
+            }
+
+            .drawer-header {
+                flex-direction: column;
+            }
+
+            button,
+            .secondary-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <section class="hero">
+            <article class="brand-card">
+                <div class="logo-wrap">
+                    <img class="brand-logo" src="help360md-logo.png" alt="HELP360 MD logo">
+                </div>
+                <div class="badge">HELP360 MD | Smart Screening</div>
+                <h1>Vaccine Eligibility Tool</h1>
+                <p>
+                    Review vaccines by date of birth and keep your HELP360 MD front desk, MA, and vaccine guidance in one
+                    clean branded tool.
+                </p>
+                <div class="brand-points">
+                    <div class="brand-point">
+                        <strong>DOB Check</strong>
+                        Age-based vaccine review in one step.
+                    </div>
+                    <div class="brand-point">
+                        <strong>Front Desk SOP</strong>
+                        Quick access to registration and payment guidance.
+                    </div>
+                    <div class="brand-point">
+                        <strong>MA SOP</strong>
+                        Fast access to intake and lab-ordering rules.
+                    </div>
+                    <div class="brand-point">
+                        <strong>Guideline Library</strong>
+                        Pregnancy and age-group vaccine references in one page.
+                    </div>
+                </div>
+            </article>
+
+            <section class="tool-card" id="eligibility-tool">
+                <span class="section-kicker">Eligibility Workflow</span>
+                <h2>Patient Lookup</h2>
+                <p class="subtext">
+                    Enter the patient date of birth to calculate the age group and display the related vaccine recommendations.
+                </p>
+
+                <form id="vaccineForm">
+                    <div class="field">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" name="dob" required>
+                    </div>
+
+                    <div class="toolbar">
+                        <button type="submit">Check Eligibility</button>
+                    </div>
+                </form>
+
+                <div class="mini-note">
+                    Powered by <strong>HELP360 MD</strong>. This tool is intended for quick screening support and should be verified
+                    against your clinic's current immunization guidance and provider protocols.
+                </div>
+
+                <div class="link-actions" id="sop-center">
+                    <button type="button" class="secondary-button" id="frontDeskGuidelinesButton">Front Desk Guidelines</button>
+                    <button type="button" class="secondary-button" id="maGuidelinesButton">MA Guidelines</button>
+                </div>
+            </section>
+        </section>
+
+        <section id="result" class="result-card" aria-live="polite"></section>
+
+        <section id="sopDrawer" class="drawer-card" aria-live="polite">
+            <div class="drawer-header">
+                <div>
+                    <span class="section-kicker">HELP360 MD SOP Center</span>
+                    <h2 id="sopDrawerTitle">Guideline</h2>
+                    <p id="sopDrawerSubtitle">Quick-access SOP guidance for immigration medical exam workflows.</p>
+                </div>
+                <button type="button" id="closeSopDrawerButton">Close</button>
+            </div>
+            <div id="sopDrawerBody"></div>
+        </section>
+
+        <section class="guide-card" id="pregnancy-guide" aria-labelledby="pregnancy-guidance-heading">
+            <span class="section-kicker">HELP360 MD Guideline Reference</span>
+            <h2 id="pregnancy-guidance-heading">Pregnancy Safety Vaccine Guidance</h2>
+            <p>
+                This quick-reference table keeps pregnancy safety guidance in the same page so teams can review age-based
+                eligibility and pregnancy considerations together.
+            </p>
+
+            <div class="legend-row">
+                <span class="legend-pill">Safe</span>
+                <span class="legend-pill">Deferred / Risk-based</span>
+                <span class="legend-pill">Contraindicated in pregnancy</span>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Vaccine Category</th>
+                            <th>Vaccine Name</th>
+                            <th>Live Status</th>
+                            <th>Pregnancy Safety</th>
+                            <th>Recommendation Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pregnancyGuideBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="guide-card" id="age-chart" aria-labelledby="age-chart-heading">
+            <span class="section-kicker">HELP360 MD Visual Reference</span>
+            <h2 id="age-chart-heading">Vaccine Guidelines by Age Group</h2>
+            <p>
+                This age-based vaccine chart stays inside the tool as a quick visual reference for front desk staff, MAs, and providers.
+            </p>
+
+            <div class="guide-image-frame">
+                <img
+                    class="guide-image"
+                    src="vaccine-guidelines-age-group.png"
+                    alt="Vaccine guidelines by age group dose chart"
+                >
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const pregnancyGuideRows = [
+            ["Non-Live", "Tdap / Td", "Not Live", "Safe", "Recommended every pregnancy (27-36 weeks)."],
+            ["Non-Live", "Influenza (Inactivated)", "Not Live", "Safe", "Recommended during pregnancy."],
+            ["Non-Live", "COVID-19", "Not Live", "Safe", "Recommended during pregnancy."],
+            ["Non-Live", "Hepatitis B", "Not Live", "Safe", "Safe in pregnancy."],
+            ["Non-Live", "DTP / DTaP / DT", "Not Live", "Deferred", "Usually not given; Tdap is preferred."],
+            ["Non-Live", "Polio (IPV)", "Not Live", "Risk-based", "Avoided unless there is a clear risk."],
+            ["Non-Live", "Hib", "Not Live", "Risk-based", "Not routine, given only if indicated."],
+            ["Non-Live", "Hepatitis A", "Not Live", "Risk-based", "Given if risk of exposure is high."],
+            ["Non-Live", "Meningococcal", "Not Live", "Risk-based", "Given if clearly needed."],
+            ["Non-Live", "Pneumococcal", "Not Live", "Risk-based", "Usually deferred unless high risk."],
+            ["Live", "MMR", "Live", "Contraindicated", "Do not give during pregnancy."],
+            ["Live", "Rotavirus", "Live", "Contraindicated", "Do not give during pregnancy."],
+            ["Live", "Varicella (Chickenpox)", "Live", "Contraindicated", "Do not give during pregnancy."],
+            ["Live", "Live Influenza (Nasal)", "Live", "Contraindicated", "Do not give during pregnancy."]
+        ];
+
+        const vaccineRules = [
+            { name: "DTP / DTaP / DT", eligible: ({ group }) => group === "2-11 Months" || group === "12 Months-6 Years", remark: "" },
+            { name: "Tdap / Td", eligible: ({ group }) => ["11-17 Years", "18-64 Years", ">65 Years"].includes(group), remark: "Booster generally needed every 10 years if applicable." },
+            { name: "Polio", eligible: ({ group }) => group !== "Birth - 1 Month", remark: "" },
+            { name: "Measles, Mumps, and Rubella", eligible: ({ group }) => ["12 Months-6 Years", "7-10 Years", "11-17 Years", "18-64 Years"].includes(group), remark: "Pregnancy screening may be required before vaccination when relevant." },
+            { name: "Rotavirus", eligible: ({ group }) => group === "2-11 Months", remark: "" },
+            { name: "Hib", eligible: ({ group }) => group === "2-11 Months" || group === "12 Months-6 Years", remark: "" },
+            { name: "Hepatitis A", eligible: ({ group }) => ["12 Months-6 Years", "7-10 Years", "11-17 Years"].includes(group), remark: "" },
+            { name: "Hepatitis B", eligible: ({ group }) => ["2-11 Months", "12 Months-6 Years", "7-10 Years", "11-17 Years", "18-64 Years"].includes(group), remark: "" },
+            { name: "Meningococcal (MenACWY)", eligible: ({ group }) => group === "11-17 Years", remark: "" },
+            { name: "Varicella", eligible: ({ group }) => ["12 Months-6 Years", "7-10 Years", "11-17 Years", "18-64 Years", ">65 Years"].includes(group), remark: "Pregnancy screening may be required before vaccination when relevant." },
+            { name: "Pneumococcal", eligible: ({ group }) => ["2-11 Months", "12 Months-6 Years", ">65 Years"].includes(group), remark: "" },
+            { name: "Influenza", eligible: ({ ageMonths }) => ageMonths >= 6, remark: "Typically recommended annually." },
+            { name: "COVID-19", eligible: ({ ageMonths }) => ageMonths >= 6, remark: "" }
+        ];
+
+        const sopGuidelines = {
+            frontDesk: {
+                title: "Front Desk Guideline",
+                subtitle: "Registration, payment, document handling, and patient clearance workflow for immigration medical exams.",
+                sections: [
+                    { heading: "1. Purpose", body: "To ensure accurate patient registration, payment collection, and document handling for immigration medical exams." },
+                    {
+                        heading: "2. Payment Policy",
+                        bullets: [
+                            "Total fee: $440.00.",
+                            "Includes physical exam and labs only. Vaccines are not included.",
+                            "Accepted payment methods: Cash only or Zelle only.",
+                            "Payment must be collected before the patient is taken to the clinical area."
+                        ]
+                    },
+                    {
+                        heading: "3.1 Identity and Registration",
+                        bullets: [
+                            "Verify patient identity.",
+                            "Collect and scan passport into Athena.",
+                            "Confirm demographic information is correct."
+                        ]
+                    },
+                    {
+                        heading: "3.2 Form I-693 Requirement",
+                        bullets: [
+                            "Ensure the patient completes the first 3 pages of Form I-693.",
+                            "Do not send the patient to the MA or provider without partial completion."
+                        ]
+                    },
+                    {
+                        heading: "4.1 Florida Shots Search",
+                        bullets: [
+                            "Search every patient in FL Shots registry.",
+                            "If records are found, upload them under Vaccination Records in Athena."
+                        ]
+                    },
+                    {
+                        heading: "4.2 Foreign Vaccine Records",
+                        bullets: [
+                            "If the patient brings foreign vaccine records, check whether the document is in English.",
+                            "If the record is not in English, a notarized English translation is required.",
+                            "If an English version is provided, accept it and forward it to the MA or provider."
+                        ]
+                    },
+                    {
+                        heading: "5. Patient Flow Direction",
+                        bullets: [
+                            "After payment, passport scan, I-693 partial completion, and vaccination document collection are complete, the patient is cleared and sent to the MA for clinical intake."
+                        ]
+                    },
+                    {
+                        heading: "6. Front Desk Responsibility Summary",
+                        bullets: [
+                            "Correct payment collection.",
+                            "Passport scanned in Athena.",
+                            "I-693 Part 1-3 completed.",
+                            "FL Shots checked and uploaded.",
+                            "Vaccine records properly handled."
+                        ]
+                    }
+                ]
+            },
+            ma: {
+                title: "Medical Assistant (MA) Guideline",
+                subtitle: "Clinical intake, vaccination review, lab ordering, and age-based STI screening rules for immigration medical exams.",
+                sections: [
+                    { heading: "1. Purpose", body: "To ensure correct clinical intake, lab ordering, and vaccination review according to immigration requirements." },
+                    {
+                        heading: "2. Clinical Intake",
+                        bullets: [
+                            "Confirm patient identity.",
+                            "Review the passport scanned in Athena.",
+                            "Verify I-693 Part 1-3 completed.",
+                            "Review vaccination records in the chart."
+                        ]
+                    },
+                    {
+                        heading: "3.1 Florida Shots and External Records",
+                        bullets: [
+                            "Review FL Shots records uploaded by front desk.",
+                            "Review foreign vaccine records and confirm notarized translation if records are not in English."
+                        ]
+                    },
+                    {
+                        heading: "3.2 Lab Exemption Rules (Critical)",
+                        bullets: [
+                            "Do not order MMR labs if the patient has 2 documented MMR doses.",
+                            "Do not order Hepatitis B labs if the patient has 3 documented Hepatitis B doses.",
+                            "Do not order Varicella labs if the vaccine is documented or the patient has a reliable history of chickenpox."
+                        ]
+                    },
+                    {
+                        heading: "4. Required Lab Testing",
+                        bullets: [
+                            "If immunity is not documented, order MMR titer.",
+                            "If immunity is not documented, order Varicella titer.",
+                            "If immunity is not documented, order Hepatitis B titer."
+                        ]
+                    },
+                    {
+                        heading: "5. Age-Based STI Testing",
+                        bullets: [
+                            "RPR (Syphilis) is required for ages 18-44 years.",
+                            "Gonorrhea testing is required for ages 18-24 years."
+                        ]
+                    },
+                    {
+                        heading: "6. Clinical Accuracy Rule",
+                        bullets: [
+                            "Check immunity before ordering labs.",
+                            "Avoid duplicate testing.",
+                            "Verify vaccine history carefully.",
+                            "Confirm age-based testing eligibility."
+                        ]
+                    },
+                    {
+                        heading: "7. MA Responsibility Summary",
+                        bullets: [
+                            "Clinical intake review.",
+                            "Vaccination verification.",
+                            "Correct lab ordering.",
+                            "Age-based STI screening compliance.",
+                            "Prevent unnecessary testing."
+                        ]
+                    }
+                ]
+            }
+        };
+
+        const form = document.getElementById("vaccineForm");
+        const dobInput = document.getElementById("dob");
+        const resultDiv = document.getElementById("result");
+        const pregnancyGuideBody = document.getElementById("pregnancyGuideBody");
+        const frontDeskGuidelinesButton = document.getElementById("frontDeskGuidelinesButton");
+        const maGuidelinesButton = document.getElementById("maGuidelinesButton");
+        const sopDrawer = document.getElementById("sopDrawer");
+        const sopDrawerTitle = document.getElementById("sopDrawerTitle");
+        const sopDrawerSubtitle = document.getElementById("sopDrawerSubtitle");
+        const sopDrawerBody = document.getElementById("sopDrawerBody");
+        const closeSopDrawerButton = document.getElementById("closeSopDrawerButton");
+
+        function renderPregnancyGuide() {
+            pregnancyGuideBody.innerHTML = pregnancyGuideRows.map((row) => `
+                <tr>
+                    <td>${row[0]}</td>
+                    <td>${row[1]}</td>
+                    <td>${row[2]}</td>
+                    <td>${row[3]}</td>
+                    <td>${row[4]}</td>
+                </tr>
+            `).join("");
+        }
+
+        function calculateAgeDetails(dob) {
+            const birthDate = new Date(`${dob}T00:00:00`);
+            const today = new Date();
+
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+
+            if (today.getDate() < birthDate.getDate()) {
+                months -= 1;
+            }
+
+            if (months < 0) {
+                years -= 1;
+                months += 12;
+            }
+
+            const totalMonths =
+                (today.getFullYear() - birthDate.getFullYear()) * 12 +
+                (today.getMonth() - birthDate.getMonth()) +
+                (today.getDate() >= birthDate.getDate() ? 0 : -1);
+
+            return { years, months, totalMonths };
+        }
+
+        function getAgeGroup(ageYears, ageMonths) {
+            if (ageMonths < 2) return "Birth - 1 Month";
+            if (ageMonths <= 11) return "2-11 Months";
+            if (ageYears <= 6) return "12 Months-6 Years";
+            if (ageYears <= 10) return "7-10 Years";
+            if (ageYears <= 17) return "11-17 Years";
+            if (ageYears <= 64) return "18-64 Years";
+            return ">65 Years";
+        }
+
+        function formatAge(years, months) {
+            if (years <= 0) {
+                return `${months} month${months === 1 ? "" : "s"}`;
+            }
+            if (months === 0) {
+                return `${years} year${years === 1 ? "" : "s"}`;
+            }
+            return `${years} year${years === 1 ? "" : "s"} ${months} month${months === 1 ? "" : "s"}`;
+        }
+
+        function renderSopBlock(section) {
+            const body = section.body ? `<p>${section.body}</p>` : "";
+            const bullets = section.bullets
+                ? `<ul class="sop-list">${section.bullets.map((item) => `<li>${item}</li>`).join("")}</ul>`
+                : "";
+
+            return `
+                <section class="sop-block">
+                    <h3>${section.heading}</h3>
+                    ${body}
+                    ${bullets}
+                </section>
+            `;
+        }
+
+        function openSopDrawer(type) {
+            const content = sopGuidelines[type];
+            if (!content) return;
+
+            sopDrawerTitle.textContent = content.title;
+            sopDrawerSubtitle.textContent = content.subtitle;
+            sopDrawerBody.innerHTML = content.sections.map(renderSopBlock).join("");
+            sopDrawer.classList.add("active");
+            frontDeskGuidelinesButton.classList.toggle("active", type === "frontDesk");
+            maGuidelinesButton.classList.toggle("active", type === "ma");
+            sopDrawer.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function closeSopDrawer() {
+            sopDrawer.classList.remove("active");
+            frontDeskGuidelinesButton.classList.remove("active");
+            maGuidelinesButton.classList.remove("active");
+        }
+
+        function renderResults(dob) {
+            const birthDate = new Date(`${dob}T00:00:00`);
+            const today = new Date();
+
+            if (Number.isNaN(birthDate.getTime()) || birthDate > today) {
+                alert("Please enter a valid date of birth that is not in the future.");
+                resultDiv.classList.remove("active");
+                return;
+            }
+
+            const { years, months, totalMonths } = calculateAgeDetails(dob);
+            const group = getAgeGroup(years, totalMonths);
+
+            const evaluatedVaccines = vaccineRules.map((rule) => ({
+                name: rule.name,
+                required: rule.eligible({ group, ageYears: years, ageMonths: totalMonths }) ? "YES" : "NO",
+                remark: rule.remark || "None"
+            }));
+
+            const yesCount = evaluatedVaccines.filter((item) => item.required === "YES").length;
+            const noCount = evaluatedVaccines.length - yesCount;
+
+            const rows = evaluatedVaccines.map((item) => `
+                <tr>
+                    <td>${item.name}</td>
+                    <td><span class="status-pill ${item.required === "YES" ? "status-yes" : "status-no"}">${item.required}</span></td>
+                    <td>${item.remark}</td>
+                </tr>
+            `).join("");
+
+            resultDiv.innerHTML = `
+                <div class="summary-head">
+                    <span class="section-kicker">Patient Summary</span>
+                    <h2>Eligibility Results</h2>
+                    <p class="summary-meta">
+                        DOB: <strong>${birthDate.toLocaleDateString()}</strong><br>
+                        Calculated Age: <strong>${formatAge(years, months)}</strong><br>
+                        Age Group: <strong>${group}</strong>
+                    </p>
+                </div>
+
+                <div class="summary-grid">
+                    <div class="summary-tile">
+                        <span>Age Group</span>
+                        <strong>${group}</strong>
+                    </div>
+                    <div class="summary-tile">
+                        <span>Eligible Vaccines</span>
+                        <strong>${yesCount}</strong>
+                    </div>
+                    <div class="summary-tile">
+                        <span>Not Indicated</span>
+                        <strong>${noCount}</strong>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vaccine</th>
+                                <th>Required</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+
+                <p class="footer-note">
+                    HELP360 MD presentation layer. Recommendation output is based on the logic configured in this page and should be
+                    confirmed against active immunization schedules, patient history, contraindications, and provider guidance.
+                </p>
+            `;
+
+            resultDiv.classList.add("active");
+            resultDiv.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        renderPregnancyGuide();
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            renderResults(dobInput.value);
+        });
+
+        frontDeskGuidelinesButton.addEventListener("click", function () {
+            openSopDrawer("frontDesk");
+        });
+
+        maGuidelinesButton.addEventListener("click", function () {
+            openSopDrawer("ma");
+        });
+
+        closeSopDrawerButton.addEventListener("click", closeSopDrawer);
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && sopDrawer.classList.contains("active")) {
+                closeSopDrawer();
+            }
+        });
+    </script>
+</body>
+</html>
